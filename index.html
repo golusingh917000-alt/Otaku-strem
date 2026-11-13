@@ -34,46 +34,57 @@ body{background:#111;color:#fff;font-family:sans-serif;margin:0;padding-bottom:3
             <div id="list"></div>
 
             <script>
-            const URL="https://google.com"+Date.now();
-            let data=[{s:"सीजन 1",e:"episode 01",u:"https://google.com"}];
-            show('1');
+            const SHEET_ID = "10gs9aHw9JWKFP7lY_j_k4OOdljkFv4pfNv69GVJ9lZY";
+            const FILE_ID = "1MkGDPt24ru7rFP9yiEHszRi66lqC6jOv";
 
-            function cleanLink(raw){
-              let m = raw.match(/https?:\/\/[^\s"'<>]+/);
-                let link = m ? m.at(0) : raw;
-                  if(link.includes('://google.com') && link.includes('/view')){
-                      link = link.split('/view').at(0) + '/preview';
-                        }
-                          return link;
-                          }
+            const DOCS_BASE = "https://" + "docs.google" + ".com/spreadsheets/d/";
+            const DRIVE_BASE = "https://" + "drive.google" + ".com/file/d/";
 
-                          fetch(URL).then(r=>r.text()).then(t=>{
-                            let live=[];
-                              t.split(/\r?\n/).forEach(r=>{
-                                  let c=r.split(',');
-                                      if(c.length>=3){
-                                            let s=c.shift().replace(/^"|"$/g,'').trim();
-                                                  let e=c.shift().replace(/^"|"$/g,'').trim();
-                                                        let u=cleanLink(c.join(',').replace(/^"|"$/g,'').trim());
-                                                              if(u && u.includes('http')) live.push({s:s, e:e, u:u});
-                                                                  }
-                                                                    });
-                                                                      if(live.length>0){ data=live; show('1'); }
-                                                                      });
+            const URL = DOCS_BASE + SHEET_ID + "/export?format=csv&t=" + Date.now();
 
-                                                                      function show(num,b){
-                                                                        if(b){document.querySelectorAll('.tabs button').forEach(x=>x.className='');b.className='on';}
-                                                                          let f=data.filter(x=>x.s.includes(num));
-                                                                            document.getElementById('list').innerHTML=f.length?f.map(x=>`
-                                                                                <div class="card">
-                                                                                      <span class="ep">${x.e}</span>
-                                                                                            <div>
-                                                                                                    <a class="btn" href="${x.u}">▶ प्ले</a>
-                                                                                                            <a class="btn dl" href="${x.u}" target="_blank">⬇ डाउनलोड</a>
-                                                                                                                  </div>
-                                                                                                                      </div>`).join(''):'इस सीज़न में कोई एपिसोड नहीं';
-                                                                                                                      }
-                                                                                                                      </script>
-                                                                                                                      </body>
-                                                                                                                      </html>
-                                                                                                                      
+            let data = [{
+              s: "सीजन 1",
+                e: "episode 01",
+                  u: DRIVE_BASE + FILE_ID + "/preview"
+                  }];
+                  show('1');
+
+                  function cleanLink(raw){
+                    let m = raw.match(/https?:\/\/[^\s"'<>]+/);
+                      let link = m ? m.at(0) : raw;
+                        if(link.includes("drive.google") && link.includes("/view")){
+                            link = link.split("/view").at(0) + "/preview";
+                              }
+                                return link;
+                                }
+
+                                fetch(URL).then(r=>r.text()).then(t=>{
+                                  let live=[];
+                                    t.split(/\r?\n/).forEach(r=>{
+                                        let c=r.split(',');
+                                            if(c.length>=3){
+                                                  let s=c.shift().replace(/^"|"$/g,'').trim();
+                                                        let e=c.shift().replace(/^"|"$/g,'').trim();
+                                                              let u=cleanLink(c.join(',').replace(/^"|"$/g,'').trim());
+                                                                    if(u && u.includes('http')) live.push({s:s, e:e, u:u});
+                                                                        }
+                                                                          });
+                                                                            if(live.length>0){ data=live; show('1'); }
+                                                                            });
+
+                                                                            function show(num,b){
+                                                                              if(b){document.querySelectorAll('.tabs button').forEach(x=>x.className='');b.className='on';}
+                                                                                let f=data.filter(x=>x.s.includes(num));
+                                                                                  document.getElementById('list').innerHTML=f.length?f.map(x=>`
+                                                                                      <div class="card">
+                                                                                            <span class="ep">${x.e}</span>
+                                                                                                  <div>
+                                                                                                          <a class="btn" href="${x.u}">▶ प्ले</a>
+                                                                                                                  <a class="btn dl" href="${x.u}" target="_blank">⬇ डाउनलोड</a>
+                                                                                                                        </div>
+                                                                                                                            </div>`).join(''):'इस सीज़न में कोई एपिसोड नहीं';
+                                                                                                                            }
+                                                                                                                            </script>
+                                                                                                                            </body>
+                                                                                                                            </html>
+                                                                                                                            
