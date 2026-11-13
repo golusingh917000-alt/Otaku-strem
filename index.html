@@ -46,33 +46,36 @@ iframe{width:100%;height:205px;border:none;display:block}
                 let data=[];
 
                 fetch(URL).then(r=>r.text()).then(t=>{
-                  t.split(/\r?\n/).slice(1).forEach(r=>{
+                  t.split(/\r?\n/).forEach(r=>{
                       let c=r.split(',').map(x=>x.replace(/^"|"$/g,'').trim());
-                          if(c.length>=3 && c.at(0)) data.push({s:c.at(0), e:c.at(1), u:c.at(2)});
-                            });
-                              show('1');
-                              }).catch(()=>document.getElementById('list').innerHTML='डेटा लोड नहीं हुआ');
+                          if(c.length>=3){
+                                let s=c.shift(), e=c.shift(), u=c.shift();
+                                      if(u && u.includes('http')) data.push({s:s, e:e, u:u});
+                                          }
+                                            });
+                                              show('1');
+                                              }).catch(()=>document.getElementById('list').innerHTML='डेटा लोड नहीं हुआ');
 
-                              function show(num,b){
-                                if(b){document.querySelectorAll('.tabs button').forEach(x=>x.className='');b.className='on';}
-                                  let f=data.filter(x=>x.s.includes(num));
-                                    document.getElementById('list').innerHTML=f.length?f.map(x=>`
-                                        <div class="card">
-                                              <span class="ep">${x.e}</span>
-                                                    <div>
-                                                            <button class="btn" onclick="play('${x.u}','${x.e}')">▶ प्ले</button>
-                                                                    <a class="btn dl" href="${x.u}" target="_blank">⬇ डाउनलोड</a>
-                                                                          </div>
-                                                                              </div>`).join(''):'इस सीज़न में कोई एपिसोड नहीं';
-                                                                              }
+                                              function show(num,b){
+                                                if(b){document.querySelectorAll('.tabs button').forEach(x=>x.className='');b.className='on';}
+                                                  let f=data.filter(x=>x.s.includes(num));
+                                                    document.getElementById('list').innerHTML=f.length?f.map(x=>`
+                                                        <div class="card">
+                                                              <span class="ep">${x.e}</span>
+                                                                    <div>
+                                                                            <button class="btn" onclick="play('${x.u}','${x.e}')">▶ प्ले</button>
+                                                                                    <a class="btn dl" href="${x.u}" target="_blank">⬇ डाउनलोड</a>
+                                                                                          </div>
+                                                                                              </div>`).join(''):'इस सीज़न में कोई एपिसोड नहीं';
+                                                                                              }
 
-                                                                              function play(u,title){
-                                                                                document.getElementById('pBox').style.display='block';
-                                                                                  document.getElementById('pTitle').innerText='▶ चल रहा है: '+title;
-                                                                                    document.getElementById('vid').src=u;
-                                                                                      window.scrollTo({top:0,behavior:'smooth'});
-                                                                                      }
-                                                                                      </script>
-                                                                                      </body>
-                                                                                      </html>
-                                                                                      
+                                                                                              function play(u,title){
+                                                                                                document.getElementById('pBox').style.display='block';
+                                                                                                  document.getElementById('pTitle').innerText='▶ चल रहा है: '+title;
+                                                                                                    document.getElementById('vid').src=u;
+                                                                                                      window.scrollTo({top:0,behavior:'smooth'});
+                                                                                                      }
+                                                                                                      </script>
+                                                                                                      </body>
+                                                                                                      </html>
+                                                                                                      
