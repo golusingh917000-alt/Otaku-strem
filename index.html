@@ -4,13 +4,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 body{background:#111;color:#fff;font-family:sans-serif;margin:0;padding-bottom:30px;text-align:center}
-.banner{background:radial-gradient(circle at top,#ff4500,#2a0800 50%,#111);padding:28px 15px;border-bottom:2px solid #ff4500}
+.banner{background:radial-gradient(circle at top,#ff4500,#2a0800 50%,#111);padding:25px 15px;border-bottom:2px solid #ff4500}
 .tag{background:#ff4500;font-size:11px;font-weight:bold;padding:3px 8px;border-radius:4px}
 .banner h2{margin:8px 0 4px;font-size:24px}
 .banner p{margin:0;font-size:12px;color:#ffae91}
 .player{display:none;width:94%;margin:15px auto;border:2px solid #ff4500;border-radius:8px;overflow:hidden;background:#000}
 .now{background:#1c1c1c;color:#ff4500;padding:7px;font-size:13px;font-weight:bold;text-align:left}
-iframe{width:100%;height:205px;border:none;display:block}
+iframe{width:100%;height:205px;border:none;display:block;background:#000}
 .tabs{margin:15px 0}
 .tabs button{background:#111;color:#fff;border:1px solid #ff4500;padding:8px 18px;margin:4px;border-radius:20px;font-weight:bold;font-size:14px}
 .tabs button.on{background:#ff4500}
@@ -35,49 +35,60 @@ iframe{width:100%;height:205px;border:none;display:block}
 
           <div class="tabs">
             <button class="on" onclick="show('1',this)">सीज़न 1</button>
-              <button class="on2" onclick="show('2',this)">सीज़न 2</button>
-                <button class="on3" onclick="show('3',this)">सीज़न 3</button>
+              <button onclick="show('2',this)">सीज़न 2</button>
+                <button onclick="show('3',this)">सीज़न 3</button>
                 </div>
 
                 <div id="list"></div>
 
                 <script>
                 const URL="https://google.com"+Date.now();
-                let data=[{s:"सीजन 1",e:"episode 01",u:"https://youtube.com"}];
+                let data=[{s:"सीजन 1",e:"episode 01",u:"https://google.com"}];
                 show('1');
 
-                fetch(URL).then(r=>r.text()).then(t=>{
-                  let live=[];
-                    t.split(/\r?\n/).forEach(r=>{
-                        let c=r.split(',').map(x=>x.replace(/^"|"$/g,'').trim());
-                            if(c.length>=3){
-                                  let s=c.shift(), e=c.shift(), u=c.shift();
-                                        if(u && u.includes('http')) live.push({s:s, e:e, u:u});
-                                            }
-                                              });
-                                                if(live.length>0){ data=live; show('1'); }
-                                                });
+                function cleanLink(raw){
+                  let m = raw.match(/https?:\/\/[^\s"'<>]+/);
+                    let link = m ? m.at(0) : raw;
+                      if(link.includes('://google.com') && link.includes('/view')){
+                          link = link.split('/view').at(0) + '/preview';
+                            }
+                              return link;
+                              }
 
-                                                function show(num,b){
-                                                  if(b){document.querySelectorAll('.tabs button').forEach(x=>x.className='');b.className='on';}
-                                                    let f=data.filter(x=>x.s.includes(num));
-                                                      document.getElementById('list').innerHTML=f.length?f.map(x=>`
-                                                          <div class="card">
-                                                                <span class="ep">${x.e}</span>
-                                                                      <div>
-                                                                              <button class="btn" onclick="play('${x.u}','${x.e}')">▶ प्ले</button>
-                                                                                      <a class="btn dl" href="${x.u}" target="_blank">⬇ डाउनलोड</a>
-                                                                                            </div>
-                                                                                                </div>`).join(''):'इस सीज़न में कोई एपिसोड नहीं';
-                                                                                                }
+                              fetch(URL).then(r=>r.text()).then(t=>{
+                                let live=[];
+                                  t.split(/\r?\n/).forEach(r=>{
+                                      let c=r.split(',');
+                                          if(c.length>=3){
+                                                let s=c.shift().replace(/^"|"$/g,'').trim();
+                                                      let e=c.shift().replace(/^"|"$/g,'').trim();
+                                                            let u=cleanLink(c.join(',').replace(/^"|"$/g,'').trim());
+                                                                  if(u && u.includes('http')) live.push({s:s, e:e, u:u});
+                                                                      }
+                                                                        });
+                                                                          if(live.length>0){ data=live; show('1'); }
+                                                                          });
 
-                                                                                                function play(u,title){
-                                                                                                  document.getElementById('pBox').style.display='block';
-                                                                                                    document.getElementById('pTitle').innerText='▶ चल रहा है: '+title;
-                                                                                                      document.getElementById('vid').src=u;
-                                                                                                        window.scrollTo({top:0,behavior:'smooth'});
-                                                                                                        }
-                                                                                                        </script>
-                                                                                                        </body>
-                                                                                                        </html>
-                                                                                                        
+                                                                          function show(num,b){
+                                                                            if(b){document.querySelectorAll('.tabs button').forEach(x=>x.className='');b.className='on';}
+                                                                              let f=data.filter(x=>x.s.includes(num));
+                                                                                document.getElementById('list').innerHTML=f.length?f.map(x=>`
+                                                                                    <div class="card">
+                                                                                          <span class="ep">${x.e}</span>
+                                                                                                <div>
+                                                                                                        <button class="btn" onclick="play('${x.u}','${x.e}')">▶ प्ले</button>
+                                                                                                                <a class="btn dl" href="${x.u}" target="_blank">⬇ डाउनलोड</a>
+                                                                                                                      </div>
+                                                                                                                          </div>`).join(''):'इस सीज़न में कोई एपिसोड नहीं';
+                                                                                                                          }
+
+                                                                                                                          function play(u,title){
+                                                                                                                            document.getElementById('pBox').style.display='block';
+                                                                                                                              document.getElementById('pTitle').innerText='▶ चल रहा है: '+title;
+                                                                                                                                document.getElementById('vid').src=u;
+                                                                                                                                  window.scrollTo({top:0,behavior:'smooth'});
+                                                                                                                                  }
+                                                                                                                                  </script>
+                                                                                                                                  </body>
+                                                                                                                                  </html>
+                                                                                                                                  
