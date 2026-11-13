@@ -3,43 +3,76 @@
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-body{background:#111;color:#fff;font-family:sans-serif;margin:0;text-align:center}
-.top{background:linear-gradient(#ff4500,#111);padding:25px 10px}
-iframe{width:95%;height:200px;border:2px solid #ff4500;border-radius:8px;display:none;margin:10px auto}
-.tabs button{background:#111;color:#fff;border:1px solid #ff4500;padding:8px 16px;margin:10px 4px;border-radius:20px;font-weight:bold}
+body{background:#111;color:#fff;font-family:sans-serif;margin:0;padding-bottom:30px;text-align:center}
+.banner{background:radial-gradient(circle at top,#ff4500,#2a0800 50%,#111);padding:28px 15px;border-bottom:2px solid #ff4500}
+.tag{background:#ff4500;font-size:11px;font-weight:bold;padding:3px 8px;border-radius:4px}
+.banner h2{margin:8px 0 4px;font-size:24px;text-shadow:0 2px 8px #000}
+.banner p{margin:0;font-size:12px;color:#ffae91}
+.player{display:none;width:94%;margin:15px auto;border:2px solid #ff4500;border-radius:8px;overflow:hidden;background:#000}
+.now{background:#1c1c1c;color:#ff4500;padding:7px;font-size:13px;font-weight:bold;text-align:left}
+iframe{width:100%;height:205px;border:none;display:block}
+.tabs{margin:15px 0}
+.tabs button{background:#111;color:#fff;border:1px solid #ff4500;padding:8px 18px;margin:4px;border-radius:20px;font-weight:bold;font-size:14px}
 .tabs button.on{background:#ff4500}
-.card{background:#1e1e1e;margin:10px auto;padding:12px;width:90%;border-left:4px solid #ff4500;border-radius:6px;display:flex;justify-content:space-between;align-items:center}
-.btn{background:#ff4500;color:#fff;border:none;padding:6px 12px;border-radius:4px;text-decoration:none;font-size:13px;margin-left:5px}
-.dl{background:#333;color:#ff4500;border:1px solid #ff4500}
+.card{background:#1a1a1a;margin:10px auto;padding:12px 15px;width:92%;border-left:4px solid #ff4500;border-radius:8px;display:flex;justify-content:space-between;align-items:center}
+.ep{font-size:15px;font-weight:bold;text-transform:capitalize}
+.btn{background:#ff4500;color:#fff;border:none;padding:7px 12px;border-radius:5px;text-decoration:none;font-size:13px;font-weight:bold;margin-left:6px}
+.dl{background:#2a2a2a;color:#ff4500;border:1px solid #ff4500}
 </style>
 </head>
 <body>
-<div class="top"><h2>Jujutsu Kaisen (Hindi)</h2></div>
-<iframe id="vid" allowfullscreen></iframe>
-<div class="tabs">
-<button class="on" onclick="show('सीजन 1',this)">सीज़न 1</button>
-<button onclick="show('सीजन 2',this)">सीज़न 2</button>
-<button onclick="show('सीजन 3',this)">सीज़न 3</button>
-</div>
-<div id="list">लोड हो रहा है...</div>
-<script>
-const URL="https://google.com"+Date.now();
-let data=[];
-fetch(URL).then(r=>r.text()).then(t=>{
-  t.split('\n').slice(1).forEach(r=>{
-      let c=r.split(',').map(x=>x.replace(/^"|"$/g,'').trim());
-          if(c.length>=3)data.push({s:c.shift(),e:c.shift(),u:c.shift()});
-            });
-              show('सीजन 1');
-              }).catch(()=>document.getElementById('list').innerHTML='डेटा लोड नहीं हुआ');
 
-              function show(s,b){
-                if(b){document.querySelectorAll('.tabs button').forEach(x=>x.className='');b.className='on';}
-                  let f=data.filter(x=>x.s.replace(/ज़/g,'ज')==s.replace(/ज़/g,'ज'));
-                    document.getElementById('list').innerHTML=f.length?f.map(x=>`<div class="card"><span>${x.e}</span><div><button class="btn" onclick="play('${x.u}')">▶ प्ले</button><a class="btn dl" href="${x.u}" target="_blank">⬇</a></div></div>`).join(''):'कोई एपिसोड नहीं';
-                    }
-                    function play(u){let v=document.getElementById('vid');v.style.display='block';v.src=u;}
-                    </script>
-                    </body>
-                    </html>
-                    
+<div class="banner">
+  <span class="tag">OTAKU STREAM • HINDI</span>
+    <h2>Jujutsu Kaisen (Hindi)</h2>
+      <p>Action • Supernatural • HD Stream</p>
+      </div>
+
+      <div class="player" id="pBox">
+        <div class="now" id="pTitle">अभी चल रहा है...</div>
+          <iframe id="vid" allowfullscreen allow="autoplay"></iframe>
+          </div>
+
+          <div class="tabs">
+            <button class="on" onclick="show('1',this)">सीज़न 1</button>
+              <button onclick="show('2',this)">सीज़न 2</button>
+                <button onclick="show('3',this)">सीज़न 3</button>
+                </div>
+
+                <div id="list">एपिसोड्स लोड हो रहे हैं...</div>
+
+                <script>
+                const URL="https://google.com"+Date.now();
+                let data=[];
+
+                fetch(URL).then(r=>r.text()).then(t=>{
+                  t.split(/\r?\n/).slice(1).forEach(r=>{
+                      let c=r.split(',').map(x=>x.replace(/^"|"$/g,'').trim());
+                          if(c.length>=3 && c.at(0)) data.push({s:c.at(0), e:c.at(1), u:c.at(2)});
+                            });
+                              show('1');
+                              }).catch(()=>document.getElementById('list').innerHTML='डेटा लोड नहीं हुआ');
+
+                              function show(num,b){
+                                if(b){document.querySelectorAll('.tabs button').forEach(x=>x.className='');b.className='on';}
+                                  let f=data.filter(x=>x.s.includes(num));
+                                    document.getElementById('list').innerHTML=f.length?f.map(x=>`
+                                        <div class="card">
+                                              <span class="ep">${x.e}</span>
+                                                    <div>
+                                                            <button class="btn" onclick="play('${x.u}','${x.e}')">▶ प्ले</button>
+                                                                    <a class="btn dl" href="${x.u}" target="_blank">⬇ डाउनलोड</a>
+                                                                          </div>
+                                                                              </div>`).join(''):'इस सीज़न में कोई एपिसोड नहीं';
+                                                                              }
+
+                                                                              function play(u,title){
+                                                                                document.getElementById('pBox').style.display='block';
+                                                                                  document.getElementById('pTitle').innerText='▶ चल रहा है: '+title;
+                                                                                    document.getElementById('vid').src=u;
+                                                                                      window.scrollTo({top:0,behavior:'smooth'});
+                                                                                      }
+                                                                                      </script>
+                                                                                      </body>
+                                                                                      </html>
+                                                                                      
