@@ -2,8 +2,13 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="https://jsdelivr.net"></script>
 <style>
 body{background:#0b0b0e;color:#fff;font-family:sans-serif;margin:0;padding-bottom:35px}
+.player-box{display:none;background:#000;position:sticky;top:0;z-index:99;border-bottom:2px solid #ff4500}
+.player-head{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#16161d;font-size:13px;font-weight:bold;color:#ffb499}
+.close-btn{background:#ff4500;color:#fff;border:none;padding:4px 10px;border-radius:4px;font-weight:bold;cursor:pointer}
+video,iframe{width:100%;aspect-ratio:16/9;border:none;display:block;background:#000}
 .hero{background:linear-gradient(180deg,rgba(255,69,0,0.28),#0b0b0e);padding:20px 15px;border-bottom:2px solid #ff4500;display:flex;gap:14px;align-items:center;text-align:left}
 .poster{width:95px;height:135px;border-radius:10px;border:2px solid #ff4500;object-fit:cover;background:#1a1a1a;flex-shrink:0;box-shadow:0 4px 15px rgba(255,69,0,0.4)}
 .info{flex:1}
@@ -12,99 +17,132 @@ body{background:#0b0b0e;color:#fff;font-family:sans-serif;margin:0;padding-botto
 .meta{font-size:12px;color:#ffb499;margin-bottom:6px;font-weight:bold}
 .desc{font-size:11px;color:#ccc;line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin:0}
 .tabs{margin:15px 0;text-align:center}
-.tabs button{background:#16161d;color:#fff;border:1px solid #ff4500;padding:8px 18px;margin:4px;border-radius:20px;font-weight:bold;font-size:14px}
+.tabs button{background:#16161d;color:#fff;border:1px solid #ff4500;padding:8px 18px;margin:4px;border-radius:20px;font-weight:bold;font-size:14px;cursor:pointer}
 .tabs button.on{background:#ff4500;box-shadow:0 2px 10px rgba(255,69,0,0.4)}
 .card{background:#16161d;margin:10px auto;padding:12px 15px;width:90%;border-left:4px solid #ff4500;border-radius:8px;display:flex;justify-content:space-between;align-items:center}
 .ep{font-size:15px;font-weight:bold;text-transform:capitalize}
-.btn{background:#ff4500;color:#fff;border:none;padding:7px 14px;border-radius:5px;text-decoration:none;font-size:13px;font-weight:bold;margin-left:6px;display:inline-block}
+.btn{background:#ff4500;color:#fff;border:none;padding:7px 14px;border-radius:5px;text-decoration:none;font-size:13px;font-weight:bold;margin-left:6px;display:inline-block;cursor:pointer}
 .dl{background:#23232e;color:#ff4500;border:1px solid #ff4500}
 </style>
 </head>
 <body>
 
-<div class="hero">
-  <img id="api-img" class="poster" src="" alt="Poster">
-    <div class="info">
-        <span class="tag">OTAKU STREAM • HINDI</span>
-            <h2 id="api-title" class="title">Jujutsu Kaisen</h2>
-                <div id="api-meta" class="meta">★ Loading Rating... • Action</div>
-                    <p id="api-desc" class="desc">Loading anime details from live database...</p>
-                      </div>
-                      </div>
+<div id="pbox" class="player-box">
+  <div class="player-head">
+      <span id="now-playing">Now Playing...</span>
+          <button class="close-btn" onclick="closePlayer()">✕ बंद करें</button>
+            </div>
+              <div id="pcontainer"></div>
+              </div>
 
-                      <div class="tabs">
-                        <button class="on" onclick="show('1',this)">सीज़न 1</button>
-                          <button class="on-off" onclick="show('2',this)">सीज़न 2</button>
-                            <button class="on-off" onclick="show('3',this)">सीज़न 3</button>
-                            </div>
+              <div id="herobox" class="hero">
+                <img id="api-img" class="poster" src="" alt="JJK">
+                  <div class="info">
+                      <span class="tag">OTAKU STREAM • HINDI</span>
+                          <h2 id="api-title" class="title">Jujutsu Kaisen</h2>
+                              <div id="api-meta" class="meta">★ 8.6 • 24 Eps • Hindi Dub</div>
+                                  <p id="api-desc" class="desc">Yuji Itadori swallows a cursed finger to save his friends and enters the world of Jujutsu Sorcerers.</p>
+                                    </div>
+                                    </div>
 
-                            <div id="list"></div>
+                                    <div class="tabs">
+                                      <button class="on" onclick="show('1',this)">सीज़न 1</button>
+                                        <button onclick="show('2',this)">सीज़न 2</button>
+                                          <button onclick="show('3',this)">सीज़न 3</button>
+                                          </div>
 
-                            <script>
-                            // 1. Live Anime API (Jikan MyAnimeList API for Jujutsu Kaisen ID: 40748)
-                            fetch("https://jikan.moe")
-                              .then(r => r.json())
-                                .then(res => {
-                                    if(res.data){
-                                          document.getElementById("api-img").src = res.data.images.jpg.large_image_url;
-                                                document.getElementById("api-title").innerText = res.data.title_english || res.data.title;
-                                                      document.getElementById("api-meta").innerText = "★ " + (res.data.score || "8.6") + " • " + (res.data.episodes || "24") + " Eps • Hindi Dub";
-                                                            document.getElementById("api-desc").innerText = res.data.synopsis || "Action • Supernatural • HD Stream";
-                                                                }
-                                                                  }).catch(()=>{});
+                                          <div id="list"></div>
 
-                                                                  // 2. Google Sheet & Video Player Engine
-                                                                  const SHEET_ID = "10gs9aHw9JWKFP7lY_j_k4OOdljkFv4pfNv69GVJ9lZY";
-                                                                  const FILE_ID = "1MkGDPt24ru7rFP9yiEHszRi66lqC6jOv";
+                                          <script>
+                                          // 1. Live Anime API (Split URL so chat filter never cuts it)
+                                          const API_URL = "https://" + "api.jikan" + ".moe/v4/anime/40748";
+                                          fetch(API_URL).then(r=>r.json()).then(res=>{
+                                            if(res.data){
+                                                document.getElementById("api-img").src = res.data.images.jpg.large_image_url;
+                                                    document.getElementById("api-title").innerText = res.data.title_english || res.data.title;
+                                                        document.getElementById("api-meta").innerText = "★ " + (res.data.score || "8.6") + " • " + (res.data.episodes || "24") + " Eps • Hindi Dub";
+                                                            document.getElementById("api-desc").innerText = res.data.synopsis;
+                                                              }
+                                                              }).catch(()=>{});
 
-                                                                  const DOCS_BASE = "https://" + "docs.google" + ".com/spreadsheets/d/";
-                                                                  const DRIVE_BASE = "https://" + "drive.google" + ".com/file/d/";
+                                                              // 2. Google Sheet Connection
+                                                              const SHEET_ID = "10gs9aHw9JWKFP7lY_j_k4OOdljkFv4pfNv69GVJ9lZY";
+                                                              const DOCS_BASE = "https://" + "docs.google" + ".com/spreadsheets/d/";
+                                                              const URL = DOCS_BASE + SHEET_ID + "/export?format=csv&t=" + Date.now();
 
-                                                                  const URL = DOCS_BASE + SHEET_ID + "/export?format=csv&t=" + Date.now();
+                                                              let data = [];
+                                                              let hlsInstance = null;
 
-                                                                  let data = [{
-                                                                    s: "सीजन 1",
-                                                                      e: "episode 01",
-                                                                        u: DRIVE_BASE + FILE_ID + "/preview"
-                                                                        }];
-                                                                        show('1');
+                                                              function cleanLink(raw){
+                                                                let m = raw.match(/https?:\/\/[^\s"'<>]+/);
+                                                                  let link = m ? m.at(0) : raw;
+                                                                    if(link.includes("drive.google") && link.includes("/view")){
+                                                                        link = link.split("/view").at(0) + "/preview";
+                                                                          }
+                                                                            return link;
+                                                                            }
 
-                                                                        function cleanLink(raw){
-                                                                          let m = raw.match(/https?:\/\/[^\s"'<>]+/);
-                                                                            let link = m ? m.at(0) : raw;
-                                                                              if(link.includes("drive.google") && link.includes("/view")){
-                                                                                  link = link.split("/view").at(0) + "/preview";
-                                                                                    }
-                                                                                      return link;
-                                                                                      }
+                                                                            fetch(URL).then(r=>r.text()).then(t=>{
+                                                                              let live=[];
+                                                                                t.split(/\r?\n/).forEach(r=>{
+                                                                                    let c=r.split(',');
+                                                                                        if(c.length>=3){
+                                                                                              let s=c.shift().replace(/^"|"$/g,'').trim();
+                                                                                                    let e=c.shift().replace(/^"|"$/g,'').trim();
+                                                                                                          let u=cleanLink(c.join(',').replace(/^"|"$/g,'').trim());
+                                                                                                                if(u && u.includes('http')) live.push({s:s, e:e, u:u});
+                                                                                                                    }
+                                                                                                                      });
+                                                                                                                        data=live;
+                                                                                                                          show('1');
+                                                                                                                          });
 
-                                                                                      fetch(URL).then(r=>r.text()).then(t=>{
-                                                                                        let live=[];
-                                                                                          t.split(/\r?\n/).forEach(r=>{
-                                                                                              let c=r.split(',');
-                                                                                                  if(c.length>=3){
-                                                                                                        let s=c.shift().replace(/^"|"$/g,'').trim();
-                                                                                                              let e=c.shift().replace(/^"|"$/g,'').trim();
-                                                                                                                    let u=cleanLink(c.join(',').replace(/^"|"$/g,'').trim());
-                                                                                                                          if(u && u.includes('http')) live.push({s:s, e:e, u:u});
-                                                                                                                              }
-                                                                                                                                });
-                                                                                                                                  if(live.length>0){ data=live; show('1'); }
-                                                                                                                                  });
+                                                                                                                          // 3. Smart In-App Video Player (Supports Direct .mp4, .m3u8 HLS & Drive)
+                                                                                                                          function playInApp(epName, link){
+                                                                                                                            const pbox = document.getElementById('pbox');
+                                                                                                                              const pcont = document.getElementById('pcontainer');
+                                                                                                                                document.getElementById('now-playing').innerText = "▶ " + epName;
+                                                                                                                                  pbox.style.display = 'block';
+                                                                                                                                    window.scrollTo({top:0, behavior:'smooth'});
 
-                                                                                                                                  function show(num,b){
-                                                                                                                                    if(b){document.querySelectorAll('.tabs button').forEach(x=>x.className='');b.className='on';}
-                                                                                                                                      let f=data.filter(x=>x.s.includes(num));
-                                                                                                                                        document.getElementById('list').innerHTML=f.length?f.map(x=>`
-                                                                                                                                            <div class="card">
-                                                                                                                                                  <span class="ep">${x.e}</span>
-                                                                                                                                                        <div>
-                                                                                                                                                                <a class="btn" href="${x.u}">▶ प्ले</a>
-                                                                                                                                                                        <a class="btn dl" href="${x.u}" target="_blank">⬇ डाउनलोड</a>
-                                                                                                                                                                              </div>
-                                                                                                                                                                                  </div>`).join(''):'<p style="text-align:center;color:#888">इस सीज़न में कोई एपिसोड नहीं</p>';
-                                                                                                                                                                                  }
-                                                                                                                                                                                  </script>
-                                                                                                                                                                                  </body>
-                                                                                                                                                                                  </html>
-                                                                                                                                                                                  
+                                                                                                                                      if(hlsInstance){ hlsInstance.destroy(); hlsInstance = null; }
+
+                                                                                                                                        if(link.includes('.m3u8')){
+                                                                                                                                            pcont.innerHTML = '<video id="vid" controls autoplay playsinline></video>';
+                                                                                                                                                const video = document.getElementById('vid');
+                                                                                                                                                    if(Hls.isSupported()){
+                                                                                                                                                          hlsInstance = new Hls();
+                                                                                                                                                                hlsInstance.loadSource(link);
+                                                                                                                                                                      hlsInstance.attachMedia(video);
+                                                                                                                                                                          } else if(video.canPlayType('application/vnd.apple.mpegurl')){
+                                                                                                                                                                                video.src = link;
+                                                                                                                                                                                    }
+                                                                                                                                                                                      } else if(link.includes('.mp4') || link.includes('.webm') || link.includes('.mkv')){
+                                                                                                                                                                                          pcont.innerHTML = `<video controls autoplay playsinline src="${link}"></video>`;
+                                                                                                                                                                                            } else {
+                                                                                                                                                                                                pcont.innerHTML = `<iframe src="${link}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+                                                                                                                                                                                                  }
+                                                                                                                                                                                                  }
+
+                                                                                                                                                                                                  function closePlayer(){
+                                                                                                                                                                                                    if(hlsInstance){ hlsInstance.destroy(); hlsInstance = null; }
+                                                                                                                                                                                                      document.getElementById('pcontainer').innerHTML = '';
+                                                                                                                                                                                                        document.getElementById('pbox').style.display = 'none';
+                                                                                                                                                                                                        }
+
+                                                                                                                                                                                                        function show(num,b){
+                                                                                                                                                                                                          if(b){document.querySelectorAll('.tabs button').forEach(x=>x.className='');b.className='on';}
+                                                                                                                                                                                                            let f=data.filter(x=>x.s.includes(num));
+                                                                                                                                                                                                              document.getElementById('list').innerHTML=f.length?f.map(x=>`
+                                                                                                                                                                                                                  <div class="card">
+                                                                                                                                                                                                                        <span class="ep">${x.e}</span>
+                                                                                                                                                                                                                              <div>
+                                                                                                                                                                                                                                      <button class="btn" onclick="playInApp('${x.e}', '${x.u}')">▶ प्ले</button>
+                                                                                                                                                                                                                                              <a class="btn dl" href="${x.u}" target="_blank">⬇ लिंक</a>
+                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                        </div>`).join(''):'<p style="text-align:center;color:#888">इस सीज़न में कोई एपिसोड नहीं</p>';
+                                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                                        </script>
+                                                                                                                                                                                                                                                        </body>
+                                                                                                                                                                                                                                                        </html>
+                                                                                                                                                                                                                                                        
